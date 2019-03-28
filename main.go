@@ -1,43 +1,40 @@
 package main
 
 import (
-	"encoding/base64"
+	"fmt"
 	"log"
+	"os"
 
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"github.com/urfave/cli"
 )
 
-// create the connection to kubernetes based on parameters passed in.
-// the kubernetes/client-go project is really hard to understand.
-func (p Plugin) createKubeClient() (*kubernetes.Clientset, error) {
-
-	ca, err := base64.StdEncoding.DecodeString(p.Config.Ca)
-	config := clientcmdapi.NewConfig()
-	config.Clusters["drone"] = &clientcmdapi.Cluster{
-		Server:                   p.Config.Server,
-		CertificateAuthorityData: ca,
+func main() {
+	app := cli.NewApp()
+	app.Name = "Kubano"
+	app.Usage = "To be used within DroneCI"
+	app.Action = func(c *cli.Context) error {
+		fmt.Printf("Hello %q", c.Args().Get(0))
+		return nil
 	}
-	config.AuthInfos["drone"] = &clientcmdapi.AuthInfo{
-		Token: p.Config.Token,
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:   "ca",
+			EnvVar: "APP_LANG",
+			Usage:  "KUBE_CA,PLUGIN_CA",
+		},
+		cli.StringFlag{
+			Name:   "token",
+			EnvVar: "APP_LANG",
+			Usage:  "KUBE_TOKEN,PLUGIN_TOKEN",
+		},
+		cli.StringFlag{
+			Name:   "server",
+			EnvVar: "APP_LANG",
+			Usage:  "KUBE_SERVER,PLUGIN_SERVER",
+		},
 	}
-
-	config.Contexts["drone"] = &clientcmdapi.Context{
-		Cluster:  "drone",
-		AuthInfo: "drone",
-	}
-	//config.Clusters["drone"].CertificateAuthorityData = ca
-	config.CurrentContext = "drone"
-
-	clientBuilder := clientcmd.NewNonInteractiveClientConfig(*config, "drone", &clientcmd.ConfigOverrides{}, nil)
-	actualCfg, err := clientBuilder.ClientConfig()
+	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return kubernetes.NewForConfig(actualCfg)
-}
-
-func main() {
-
 }

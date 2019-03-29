@@ -1,6 +1,12 @@
-hash: 34a5d854d17178f6f0896e906995846ae473f121735e443361c91f1eb0fa783f
-updated: 2019-03-29T08:55:36.35423+11:00
+hash: dd80df76b62073b5846624df90929f50c8d8ded4aad953864b41bb929cad8ad4
+updated: 2019-03-29T13:02:31.745505+11:00
 imports:
+- name: github.com/aymerick/raymond
+  version: b565731e1464263de0bda75f2e45d97b54b60110
+  subpackages:
+  - ast
+  - lexer
+  - parser
 - name: github.com/joho/godotenv
   version: 5c0e6c6ab1a0a9ef0a8822cba3a05d62f7dad941
 - name: github.com/urfave/cli

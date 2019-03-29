@@ -10,11 +10,11 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ deployment-name }}
+        app: {{commit.branch}}
     spec:
       containers:
       - name: nginx
-        image: 10.0.0.24:443/{{ git-username }}:{{ git-repo }}.{{ git-branch }}
+        image: 10.0.0.24:443/test:{{DRONE_BRANCH}}.{{[commit.sha]}}
         ports:
         - containerPort: 80
       imagePullSecrets:

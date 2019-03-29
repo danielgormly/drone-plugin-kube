@@ -4,62 +4,40 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"regexp"
+
+	"github.com/aymerick/raymond"
 )
 
 type (
-	Repo struct {
-		Owner string
-		Name  string
-	}
-
-	Build struct {
-		Tag     string
-		Event   string
-		Number  int
-		Commit  string
-		Ref     string
-		Branch  string
-		Author  string
-		Status  string
-		Link    string
-		Started int64
-		Created int64
-	}
-
-	Job struct {
-		Started int64
-	}
-
-	Config struct {
+	KubeConfig struct {
 		Ca        string
 		Server    string
 		Token     string
 		Namespace string
 		Template  string
 	}
-
 	Plugin struct {
-		Repo   Repo
-		Build  Build
-		Config Config
-		Job    Job
+		Template   string
+		KubeConfig KubeConfig
 	}
 )
 
 func (p Plugin) Exec() error {
-	if p.Config.Server == "" {
+	if p.KubeConfig.Server == "" {
 		log.Fatal("KUBE_SERVER is not defined")
 	}
-	if p.Config.Token == "" {
+	if p.KubeConfig.Token == "" {
 		log.Fatal("KUBE_TOKEN is not defined")
 	}
-	if p.Config.Ca == "" {
+	if p.KubeConfig.Ca == "" {
 		log.Fatal("KUBE_CA is not defined")
 	}
-	if p.Config.Namespace == "" {
-		p.Config.Namespace = "default"
+	if p.KubeConfig.Namespace == "" {
+		p.KubeConfig.Namespace = "default"
 	}
-	if p.Config.Template == "" {
+	if p.Template == "" {
 		log.Fatal("KUBE_TEMPLATE, or template must be defined")
 	}
 
@@ -69,11 +47,37 @@ func (p Plugin) Exec() error {
 	// 	log.Fatal(err.Error())
 	// }
 
-	// parse the template file and do substitutions
-	out, err := ioutil.ReadFile(p.Config.Template)
+	raw, err := ioutil.ReadFile(p.Template)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v", out)
+
+	source := string(raw)
+
+	ctx := make(map[string]string)
+	ctx["KUBE_CA"] = p.KubeConfig.Ca
+	ctx["KUBE_TOKEN"] = p.KubeConfig.Ca
+	ctx["KUBE_SERVER"] = p.KubeConfig.Ca
+	droneEnv := os.Environ()
+	for _, value := range droneEnv {
+		re := regexp.MustCompile(`^(DRONE_.*)=(.*)`)
+		if re.MatchString(value) {
+			matches := re.FindStringSubmatch(value)
+			ctx[matches[1]] = matches[2]
+		}
+	}
+
+	// parse template
+	tpl, err := raymond.Parse(source)
+	if err != nil {
+		panic(err)
+	}
+
+	result, err := tpl.Exec(ctx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print(result)
+
 	return err
 }

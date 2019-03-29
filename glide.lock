@@ -1,9 +1,9 @@
-hash: 3639aefb8783269ffebb14b8b91f44bec65716311c552020af6da38935c99f89
-updated: 2019-03-28T16:01:58.829359+11:00
+hash: 34a5d854d17178f6f0896e906995846ae473f121735e443361c91f1eb0fa783f
+updated: 2019-03-29T08:55:36.35423+11:00
 imports:
+- name: github.com/joho/godotenv
+  version: 5c0e6c6ab1a0a9ef0a8822cba3a05d62f7dad941
 - name: github.com/urfave/cli
-  version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
-- name: gopkg.in/urfave/cli.v1
   version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
 - name: k8s.io/client-go
   version: e64494209f554a6723674bd494d69445fb76a1d4

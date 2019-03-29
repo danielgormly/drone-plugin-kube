@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ deployment-name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ deployment-name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ deployment-name }}
+    spec:
+      containers:
+      - name: nginx
+        image: 10.0.0.24:443/{{ git-username }}:{{ git-repo }}.{{ git-branch }}
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred

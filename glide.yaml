@@ -4,3 +4,5 @@ import:
   version: v10.0.0
 - package: github.com/urfave/cli
   version: v1
+- package: github.com/joho/godotenv
+- package: github.com/aymerick/raymond

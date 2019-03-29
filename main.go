@@ -58,12 +58,9 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	// kubernetes token
-
 	if c.String("env-file") != "" {
 		_ = godotenv.Load(c.String("env-file"))
 	}
-
 	plugin := Plugin{
 		Repo: Repo{
 			Owner: c.String("repo.owner"),
@@ -93,6 +90,5 @@ func run(c *cli.Context) error {
 			Template:  c.String("template"),
 		},
 	}
-
 	return plugin.Exec()
 }

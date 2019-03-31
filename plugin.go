@@ -13,7 +13,7 @@ import (
 type (
 	KubeConfig struct {
 		Ca        string
-		Server    string
+		Endpoint  string
 		Token     string
 		Namespace string
 		Template  string
@@ -25,22 +25,21 @@ type (
 )
 
 func (p Plugin) Exec() error {
-	if p.KubeConfig.Server == "" {
-		log.Fatal("KUBE_SERVER is not defined")
+	if p.KubeConfig.Endpoint == "" {
+		log.Fatal("PLUGIN_ENDPOINT is not defined")
 	}
 	if p.KubeConfig.Token == "" {
-		log.Fatal("KUBE_TOKEN is not defined")
+		log.Fatal("PLUGIN_TOKEN is not defined")
 	}
 	if p.KubeConfig.Ca == "" {
-		log.Fatal("KUBE_CA is not defined")
+		log.Fatal("PLUGIN_CA is not defined")
 	}
 	if p.KubeConfig.Namespace == "" {
 		p.KubeConfig.Namespace = "default"
 	}
 	if p.Template == "" {
-		log.Fatal("KUBE_TEMPLATE, or template must be defined")
+		log.Fatal("PLUGIN_TEMPLATE, or template must be defined")
 	}
-
 	// // connect to Kubernetes
 	// clientset, err := p.createKubeClient()
 	// if err != nil {
@@ -49,6 +48,7 @@ func (p Plugin) Exec() error {
 
 	raw, err := ioutil.ReadFile(p.Template)
 	if err != nil {
+		log.Print("Error reading template file:")
 		return err
 	}
 
@@ -56,8 +56,9 @@ func (p Plugin) Exec() error {
 
 	ctx := make(map[string]string)
 	ctx["KUBE_CA"] = p.KubeConfig.Ca
-	ctx["KUBE_TOKEN"] = p.KubeConfig.Ca
-	ctx["KUBE_SERVER"] = p.KubeConfig.Ca
+	ctx["KUBE_TOKEN"] = p.KubeConfig.Token
+	ctx["KUBE_ENDPOINT"] = p.KubeConfig.Endpoint
+	ctx["KUBE_NAMESPACE"] = p.KubeConfig.Namespace
 	droneEnv := os.Environ()
 	for _, value := range droneEnv {
 		re := regexp.MustCompile(`^(DRONE_.*)=(.*)`)

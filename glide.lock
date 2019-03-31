@@ -1,5 +1,5 @@
-hash: dd80df76b62073b5846624df90929f50c8d8ded4aad953864b41bb929cad8ad4
-updated: 2019-03-29T13:02:31.745505+11:00
+hash: 3db3288a056b65e1736f52faf757d1a393b0af3d0ebbe5b63bdeab60b37e1da0
+updated: 2019-04-01T09:42:56.599946+11:00
 imports:
 - name: github.com/aymerick/raymond
   version: b565731e1464263de0bda75f2e45d97b54b60110
@@ -7,10 +7,6 @@ imports:
   - ast
   - lexer
   - parser
-- name: github.com/joho/godotenv
-  version: 5c0e6c6ab1a0a9ef0a8822cba3a05d62f7dad941
-- name: github.com/urfave/cli
-  version: cfb38830724cc34fedffe9a2a29fb54fa9169cd1
 - name: k8s.io/client-go
   version: e64494209f554a6723674bd494d69445fb76a1d4
 testImports: []

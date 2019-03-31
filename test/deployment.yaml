@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ deployment-name }}
+  name: {{PLUGIN_NAME}}
 spec:
   selector:
     matchLabels:
-      app: {{ deployment-name }}
+      app: {{PLUGIN_NAME}}
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{DRONE_COMMIT_BRANCH}}
+        app: {{PLUGIN_NAME}}
     spec:
       containers:
       - name: nginx

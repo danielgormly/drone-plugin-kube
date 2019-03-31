@@ -7,6 +7,7 @@ export PLUGIN_TOKEN=test
 export PLUGIN_ENDPOINT=test
 export PLUGIN_NAMESPACE=test
 export PLUGIN_TEMPLATE=test/deployment.yaml
+export PLUGIN_NAME=api
 
 go build
 ./kubano

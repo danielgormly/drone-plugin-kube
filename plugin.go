@@ -55,13 +55,9 @@ func (p Plugin) Exec() error {
 	source := string(raw)
 
 	ctx := make(map[string]string)
-	ctx["KUBE_CA"] = p.KubeConfig.Ca
-	ctx["KUBE_TOKEN"] = p.KubeConfig.Token
-	ctx["KUBE_ENDPOINT"] = p.KubeConfig.Endpoint
-	ctx["KUBE_NAMESPACE"] = p.KubeConfig.Namespace
 	droneEnv := os.Environ()
 	for _, value := range droneEnv {
-		re := regexp.MustCompile(`^(DRONE_.*)=(.*)`)
+		re := regexp.MustCompile(`^(DRONE_.*|PLUGIN_.*)=(.*)`)
 		if re.MatchString(value) {
 			matches := re.FindStringSubmatch(value)
 			ctx[matches[1]] = matches[2]

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"log"
 	"time"
@@ -14,11 +13,12 @@ import (
 
 // CreateKubeClient -- Creates KubeClient
 func (p Plugin) CreateKubeClient() (*kubernetes.Clientset, error) {
-	ca, err := base64.StdEncoding.DecodeString(p.KubeConfig.Ca)
+	// ca, err := base64.StdEncoding.DecodeString(p.KubeConfig.Ca)
 	config := api.NewConfig()
 	config.Clusters["default"] = &api.Cluster{
-		Server:                   p.KubeConfig.Server,
-		CertificateAuthorityData: ca,
+		Server: p.KubeConfig.Server,
+		// CertificateAuthorityData: ca,
+		InsecureSkipTLSVerify: true,
 	}
 	config.AuthInfos["default"] = &api.AuthInfo{
 		Token: p.KubeConfig.Token,

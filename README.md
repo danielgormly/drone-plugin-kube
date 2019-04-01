@@ -13,7 +13,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
   settings:
     template: path/to/deployment.yaml # within repo
     ca: # BASE64 encoded string of the K8s CA cert
-    Server: 10.0.0.24 # K8s master node address
+    Server: 10.0.0.24:6443 # K8s master node address
     Token: # Service account token to a service account that can manage deployments
     Namespace: custom # Custom namespace. (Optional, defaults to `default`)
     custom: string # Available to be referenced in template rendering as PLUGIN_CUSTOM

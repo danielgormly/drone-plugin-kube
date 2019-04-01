@@ -8,25 +8,28 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 
 #### drone.yaml partial example
 ```yml
-- name:
+- name: Deploy app
   image: danielgormly/kubano
   settings:
-    template: deployment.yaml
+    template: path/to/deployment.yaml # within repo
+    ca: # BASE64 encoded string of the K8s CA cert
+    Endpoint: 10.0.0.24 # K8s master node address
+    Token: # Service account token to a service account that can manage deployments
+    Namespace: custom # Custom namespace. (Optional, defaults to `default`)
+    custom: string # Available to be referenced in template rendering as PLUGIN_CUSTOM
+    master_alias: production # Custom setting example. Available as PLUGIN_MASTER_ALIAS
 ```
-
-#### Settings
-- **template**: path to deployment file from repo root e.g. `deploy/deployment.yaml`, etc
 
 ## deployment templates
 
-Deployment config files are first interpreted by raymond ([handlebarsjs](http://handlebarsjs.com/) equivalent). Use `{{variable}}` to add interpolated expressions e.g.
+Deployment config files are first interpreted by raymond ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available Use `{{VARIABLE}}` to add interpolated expressions e.g.
 
 #### deployment.yaml partial example
 ```yaml
 spec:
   containers:
   - name: nginx
-    image: 10.0.0.24:443/danielgormly:{{git-repo}}.{{git-branch}}
+    image: 10.0.0.24:443/danielgormly:{{DRONE_BRANCH}}
 ```
 
 #### Development

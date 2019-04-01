@@ -11,19 +11,21 @@ import (
 )
 
 type (
+	// KubeConfig -- Contains connection settings for Kube client
 	KubeConfig struct {
 		Ca        string
 		Endpoint  string
 		Token     string
 		Namespace string
-		Template  string
 	}
+	// Plugin -- Contains config for plugin
 	Plugin struct {
 		Template   string
 		KubeConfig KubeConfig
 	}
 )
 
+// Exec -- Runs plugin
 func (p Plugin) Exec() error {
 	if p.KubeConfig.Endpoint == "" {
 		log.Fatal("PLUGIN_ENDPOINT is not defined")
@@ -40,20 +42,7 @@ func (p Plugin) Exec() error {
 	if p.Template == "" {
 		log.Fatal("PLUGIN_TEMPLATE, or template must be defined")
 	}
-	// // connect to Kubernetes
-	// clientset, err := p.createKubeClient()
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
-
-	raw, err := ioutil.ReadFile(p.Template)
-	if err != nil {
-		log.Print("Error reading template file:")
-		return err
-	}
-
-	source := string(raw)
-
+	// Make map of environment variables set by Drone
 	ctx := make(map[string]string)
 	droneEnv := os.Environ()
 	for _, value := range droneEnv {
@@ -63,16 +52,21 @@ func (p Plugin) Exec() error {
 			ctx[matches[1]] = matches[2]
 		}
 	}
-
-	// parse template
-	tpl, err := raymond.Parse(source)
+	// Grab template from filesystem
+	raw, err := ioutil.ReadFile(p.Template)
+	if err != nil {
+		log.Print("Error reading template file:")
+		return err
+	}
+	// Parse template
+	result, err := raymond.Render(string(raw), ctx)
 	if err != nil {
 		panic(err)
 	}
-
-	result, err := tpl.Exec(ctx)
+	// connect to Kubernetes
+	clientset, err := p.createKubeClient()
 	if err != nil {
-		panic(err)
+		log.Fatal(err.Error())
 	}
 	fmt.Print(result)
 

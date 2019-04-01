@@ -10,7 +10,7 @@ func main() {
 		Template: os.Getenv("PLUGIN_TEMPLATE"),
 		KubeConfig: KubeConfig{
 			Token:     os.Getenv("PLUGIN_TOKEN"),
-			Endpoint:  os.Getenv("PLUGIN_ENDPOINT"),
+			Server:    os.Getenv("PLUGIN_SERVER"),
 			Ca:        os.Getenv("PLUGIN_CA"),
 			Namespace: os.Getenv("PLUGIN_NAMESPACE"),
 		},

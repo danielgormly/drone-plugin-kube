@@ -1,6 +1,6 @@
-# kubano
+# drone-kubano
 
-A simple Drone plugin for managing Kubernetes deployments.
+A simple Drone plugin for managing Kubernetes deployments. Follows from `vallard/drone-kube` but with dependency management system, improved docs, examples and restructured code.
 
 ## Usage
 
@@ -13,7 +13,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
   settings:
     template: path/to/deployment.yaml # within repo
     ca: # BASE64 encoded string of the K8s CA cert
-    Endpoint: 10.0.0.24 # K8s master node address
+    Server: 10.0.0.24 # K8s master node address
     Token: # Service account token to a service account that can manage deployments
     Namespace: custom # Custom namespace. (Optional, defaults to `default`)
     custom: string # Available to be referenced in template rendering as PLUGIN_CUSTOM
@@ -22,7 +22,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 
 ## deployment templates
 
-Deployment config files are first interpreted by raymond ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available Use `{{VARIABLE}}` to add interpolated expressions e.g.
+Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions, [DRONE_*](https://docs.drone.io/reference/environ/), PLUGIN_* environment variables. Use `{{VARIABLE}}` to add interpolated expressions e.g.
 
 #### deployment.yaml partial example
 ```yaml
@@ -37,6 +37,3 @@ spec:
 [`brew install glide`](https://github.com/Masterminds/glide).
 - Update dependencies with brew `glide update --strip-vendor`
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/examples/golang/)
-
-#### Acknowledgements
-- Heavily referenced [vallard/drone-kube](https://github.com/vallard/drone-kube).

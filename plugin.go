@@ -14,7 +14,7 @@ type (
 	// KubeConfig -- Contains connection settings for Kube client
 	KubeConfig struct {
 		Ca        string
-		Endpoint  string
+		Server    string
 		Token     string
 		Namespace string
 	}
@@ -27,8 +27,8 @@ type (
 
 // Exec -- Runs plugin
 func (p Plugin) Exec() error {
-	if p.KubeConfig.Endpoint == "" {
-		log.Fatal("PLUGIN_ENDPOINT is not defined")
+	if p.KubeConfig.Server == "" {
+		log.Fatal("PLUGIN_SERVER is not defined")
 	}
 	if p.KubeConfig.Token == "" {
 		log.Fatal("PLUGIN_TOKEN is not defined")
@@ -64,7 +64,8 @@ func (p Plugin) Exec() error {
 		panic(err)
 	}
 	// connect to Kubernetes
-	clientset, err := p.createKubeClient()
+	clientset, err := p.CreateKubeClient()
+	WatchPodCounts(clientset)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

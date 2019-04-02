@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/aymerick/raymond"
 )
@@ -44,14 +46,17 @@ func (p Plugin) Exec() error {
 	}
 	// Make map of environment variables set by Drone
 	ctx := make(map[string]string)
-	droneEnv := os.Environ()
-	for _, value := range droneEnv {
-		re := regexp.MustCompile(`^(DRONE_.*|PLUGIN_.*)=(.*)`)
+	pluginEnv := os.Environ()
+	for _, value := range pluginEnv {
+		re := regexp.MustCompile(`^PLUGIN_(.*)=(.*)`)
 		if re.MatchString(value) {
 			matches := re.FindStringSubmatch(value)
-			ctx[matches[1]] = matches[2]
+			key := strings.ToLower(matches[1])
+			ctx[key] = matches[2]
 		}
 	}
+	// TODO: Remove in first release
+	fmt.Printf("%#v", ctx)
 	// Grab template from filesystem
 	raw, err := ioutil.ReadFile(p.Template)
 	if err != nil {
@@ -60,15 +65,16 @@ func (p Plugin) Exec() error {
 	}
 	// Parse template
 	depYaml, err := raymond.Render(string(raw), ctx)
+	fmt.Printf("%s", depYaml)
 	if err != nil {
 		panic(err)
 	}
 	// Connect to Kubernetes
-	clientset, err := p.CreateKubeClient()
+	// clientset, err := p.CreateKubeClient()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	deployment := CreateDeploymentObj(depYaml)
-	UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
+	// deployment := CreateDeploymentObj(depYaml)
+	// UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 	return err
 }

@@ -22,7 +22,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 
 ## deployment templates
 
-Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions, [DRONE_*](https://docs.drone.io/reference/environ/), PLUGIN_* environment variables. Use `{{VARIABLE}}` to add interpolated expressions. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
+Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions and anything you put in settings prefixed with the PLUGIN_* environment variables e.g. `{{PLUGIN.NAMESPACE}}`. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
 
 #### Adding a service account to Kubernetes that can manage deployments
 See [example/Role.yaml](), `/example/ServiceAccount.yaml`, `/example/RoleBinding.yaml`.

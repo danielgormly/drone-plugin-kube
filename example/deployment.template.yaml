@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{PLUGIN_NAME}}
+  name: {{name}}
 spec:
   selector:
     matchLabels:
-      app: {{PLUGIN_NAME}}
+      app: {{name}}
   replicas: 1
   template:
     metadata:
       labels:
-        app: {{PLUGIN_NAME}}
+        app: {{name}}
     spec:
       containers:
       - name: nginx
-        image: 10.0.0.24:443/image:{{DRONE_COMMIT_SHA}}
+        image: 10.0.0.24:443/image:{{name}}
         ports:
         - containerPort: 80
       imagePullSecrets:

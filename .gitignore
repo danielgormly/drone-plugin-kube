@@ -1,4 +1,5 @@
-vendor
-kubano
 # Development
-test*
+vendor
+build/kubano
+test
+test.sh

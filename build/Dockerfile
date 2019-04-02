@@ -1,4 +1,4 @@
 FROM alpine
-ADD slack /bin/
+ADD kubano /bin/
 RUN apk -Uuv add ca-certificates
-ENTRYPOINT /bin/slack
+ENTRYPOINT /bin/kubano

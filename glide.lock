@@ -1,5 +1,5 @@
 hash: 3db3288a056b65e1736f52faf757d1a393b0af3d0ebbe5b63bdeab60b37e1da0
-updated: 2019-04-01T15:48:47.671231+11:00
+updated: 2019-04-02T13:06:49.449913+11:00
 imports:
 - name: github.com/aymerick/raymond
   version: b565731e1464263de0bda75f2e45d97b54b60110
@@ -54,7 +54,6 @@ imports:
   version: 0ed95abb35c445290478a5348a7b38bb154135fd
   subpackages:
   - context
-  - context/ctxhttp
   - http2
   - http2/hpack
   - idna
@@ -120,7 +119,6 @@ imports:
   - core/v1
   - events/v1beta1
   - extensions/v1beta1
-  - imagepolicy/v1alpha1
   - networking/v1
   - policy/v1beta1
   - rbac/v1
@@ -143,7 +141,6 @@ imports:
   - pkg/api/meta
   - pkg/api/resource
   - pkg/apis/meta/fuzzer
-  - pkg/apis/meta/internalversion
   - pkg/apis/meta/v1
   - pkg/apis/meta/v1/unstructured
   - pkg/apis/meta/v1beta1
@@ -161,30 +158,21 @@ imports:
   - pkg/runtime/serializer/versioning
   - pkg/selection
   - pkg/types
-  - pkg/util/cache
   - pkg/util/clock
   - pkg/util/diff
   - pkg/util/errors
   - pkg/util/framer
-  - pkg/util/httpstream
-  - pkg/util/httpstream/spdy
   - pkg/util/intstr
   - pkg/util/json
-  - pkg/util/mergepatch
   - pkg/util/naming
   - pkg/util/net
-  - pkg/util/remotecommand
   - pkg/util/runtime
   - pkg/util/sets
-  - pkg/util/strategicpatch
   - pkg/util/validation
   - pkg/util/validation/field
-  - pkg/util/wait
   - pkg/util/yaml
   - pkg/version
   - pkg/watch
-  - third_party/forked/golang/json
-  - third_party/forked/golang/netutil
   - third_party/forked/golang/reflect
 - name: k8s.io/client-go
   version: e64494209f554a6723674bd494d69445fb76a1d4

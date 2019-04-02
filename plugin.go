@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,10 +12,11 @@ import (
 type (
 	// KubeConfig -- Contains connection settings for Kube client
 	KubeConfig struct {
-		Ca        string
-		Server    string
-		Token     string
-		Namespace string
+		Ca                    string
+		Server                string
+		Token                 string
+		Namespace             string
+		InsecureSkipTLSVerify bool
 	}
 	// Plugin -- Contains config for plugin
 	Plugin struct {
@@ -59,17 +59,16 @@ func (p Plugin) Exec() error {
 		return err
 	}
 	// Parse template
-	result, err := raymond.Render(string(raw), ctx)
+	depYaml, err := raymond.Render(string(raw), ctx)
 	if err != nil {
 		panic(err)
 	}
-	// connect to Kubernetes
+	// Connect to Kubernetes
 	clientset, err := p.CreateKubeClient()
-	WatchPodCounts(clientset)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Print(result)
-
+	deployment := CreateDeploymentObj(depYaml)
+	UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 	return err
 }

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 10.0.0.24:443/test:{{DRONE_BRANCH}}.{{DRONE_COMMIT_SHA}}
+        image: 10.0.0.24:443/image:{{DRONE_COMMIT_SHA}}
         ports:
         - containerPort: 80
       imagePullSecrets:

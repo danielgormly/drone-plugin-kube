@@ -33,3 +33,5 @@ See `/example/Role.yaml`, `/example/ServiceAccount.yaml`, `/example/RoleBinding.
 - Update dependencies with brew `glide update --strip-vendor`
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/examples/golang/)
 - Testing with minikube (OSX: `brew cask install minikube`)
+
+I'm happy to accept pull requests or take feedback. Use the issues tab or a PR.

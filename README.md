@@ -23,7 +23,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
     master_alias: production # [Optional] Custom setting example. Available as PLUGIN_MASTER_ALIAS
 ```
 
-## deployment templates
+## Deployment templates
 
 Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions and anything you put in settings prefixed with the PLUGIN_* environment variables e.g. `{{PLUGIN.NAMESPACE}}`. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
 

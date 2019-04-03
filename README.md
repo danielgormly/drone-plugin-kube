@@ -1,4 +1,6 @@
-# drone-kubano
+# drone-plugin-kube
+
+[![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")
 
 A simple Drone plugin for managing Kubernetes deployments. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure.
 
@@ -9,7 +11,7 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 #### drone.yaml partial example
 ```yml
 - name: Deploy app
-  image: danielgormly/kubano
+  image: danielgormly/drone-plugin-kube
   settings:
     template: path/to/deployment.yaml # within repo
     ca: LS0tLS1... # BASE64 encoded string of the K8s CA cert
@@ -28,7 +30,8 @@ Deployment config files are first interpreted by **aymerick/raymond** ([handleba
 #### Adding a service account to Kubernetes that can manage deployments
 See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](example/ServiceAccount.yaml), [example/RoleBinding.yaml](example/RoleBinding.yaml).
 
-## Development
+## Development notes
+- No tagged releases or support for older go libraries yet, happy to take feedback in Github issues or PRs.
 - Kubernetes client not yet supported by dep, so we are using
 [`brew install glide`](https://github.com/Masterminds/glide).
 - Update dependencies with brew `glide update --strip-vendor`

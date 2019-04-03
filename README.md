@@ -1,6 +1,6 @@
 # drone-kubano
 
-A simple Drone plugin for managing Kubernetes deployments. Follows from `vallard/drone-kube` but with dependency management, up-to-date , improved docs updated to Drone 1.0.0, examples, restructured code and I will .
+A simple Drone plugin for managing Kubernetes deployments. Follows from `vallard/drone-kube` but with dependency management, up-to-date , improved docs updated to Drone 1.0.0, examples and restructured code.
 
 ## Usage
 
@@ -25,9 +25,9 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions and anything you put in settings prefixed with the PLUGIN_* environment variables e.g. `{{PLUGIN.NAMESPACE}}`. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
 
 #### Adding a service account to Kubernetes that can manage deployments
-See [example/Role.yaml](), `/example/ServiceAccount.yaml`, `/example/RoleBinding.yaml`.
+See [example/Role.yaml](example/Role.yaml), [`/example/ServiceAccount.yaml`](example/ServiceAccount.yaml), [`/example/RoleBinding.yaml`](example/RoleBinding.yaml).
 
-### Development
+## Development
 - Kubernetes client not yet supported by dep, so we are using
 [`brew install glide`](https://github.com/Masterminds/glide).
 - Update dependencies with brew `glide update --strip-vendor`

@@ -6,7 +6,7 @@ A simple Drone plugin for managing Kubernetes deployments. Follows from [vallard
 
 ## Usage
 
-Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/) to your drone pipeline definition.
+Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/) to your drone pipeline definition. Currently this plugin only updates deployments, it does not create them. I can add this behaviour or I will accept pull requests to introduce it.
 
 #### drone.yaml partial example
 ```yml

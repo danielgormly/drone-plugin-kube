@@ -70,11 +70,11 @@ func (p Plugin) Exec() error {
 		panic(err)
 	}
 	// Connect to Kubernetes
-	// clientset, err := p.CreateKubeClient()
+	clientset, err := p.CreateKubeClient()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	// deployment := CreateDeploymentObj(depYaml)
-	// UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
+	deployment := CreateDeploymentObj(depYaml)
+	UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 	return err
 }

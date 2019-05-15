@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -16,6 +17,7 @@ func main() {
 			InsecureSkipTLSVerify: os.Getenv("PLUGIN_SKIP_TLS") == "false",
 		},
 	}
+	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
 	err := plugin.Exec()
 	if err != nil {
 		log.Fatal(err)

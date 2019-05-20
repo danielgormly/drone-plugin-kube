@@ -55,8 +55,6 @@ func (p Plugin) Exec() error {
 			ctx[key] = matches[2]
 		}
 	}
-	// TODO: Remove in first release
-	fmt.Printf("%#v", ctx)
 	// Grab template from filesystem
 	raw, err := ioutil.ReadFile(p.Template)
 	if err != nil {

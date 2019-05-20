@@ -18,9 +18,8 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
     server: https://10.0.0.20:6443 # K8s master node address
     token:
       from_secret: kubernetes_token # Service account token to a service account that can manage deployments
-    namespace: custom # [Optional] Custom namespace. (Defaults to `default`)
-    custom: string # [Optional] Available to be referenced in template rendering as PLUGIN_CUSTOM
-    master_alias: production # [Optional] Custom setting example. Available as PLUGIN_MASTER_ALIAS
+    namespace: custom # [Optional] Kubernetes namespace to use (defaults to `default`)
+    [example_custom_key]: string # [Optional, example] Any additional values you label here will be available for template interpolation (lower case key names only!)
 ```
 
 ## Deployment templates

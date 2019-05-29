@@ -20,6 +20,6 @@ func main() {
 	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
 	err := plugin.Exec()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Fatal error: \n%s", err)
 	}
 }

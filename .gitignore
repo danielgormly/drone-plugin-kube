@@ -1,6 +1,4 @@
 vendor
 build/kubano
-test
-test.sh
-.env
 .DS_Store
+.env

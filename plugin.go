@@ -63,7 +63,8 @@ func (p Plugin) Exec() error {
 	}
 	// Parse template
 	depYaml, err := raymond.Render(string(raw), ctx)
-	fmt.Printf("%s", depYaml)
+
+	fmt.Printf("Updating deployment template: \n%s", depYaml)
 	if err != nil {
 		panic(err)
 	}
@@ -73,6 +74,6 @@ func (p Plugin) Exec() error {
 		log.Fatal(err.Error())
 	}
 	deployment := CreateDeploymentObj(depYaml)
-	UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
+	err = UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 	return err
 }

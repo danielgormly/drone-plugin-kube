@@ -34,5 +34,6 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 - Kubernetes client not yet supported by dep, so we are using
 [`brew install glide`](https://github.com/Masterminds/glide).
 - Update dependencies with brew `glide update --strip-vendor`
+- [Installing kubernetes/client-go](https://github.com/kubernetes/client-go/blob/master/INSTALL.md)
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/examples/golang/)
 - Testing with minikube (OSX: `brew cask install minikube`)

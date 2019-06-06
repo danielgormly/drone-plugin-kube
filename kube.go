@@ -74,8 +74,9 @@ func CreateDeployment(clientset *kubernetes.Clientset, namespace string, deploym
 func DeploymentExists(clientset *kubernetes.Clientset, namespace string, deploymentName string) (bool, error) {
 	_, err := clientset.AppsV1().Deployments(namespace).Get(deploymentName, meta.GetOptions{})
 	if err != nil {
-		statusErr := err.(*errors.StatusError)
-		if statusErr.Status().Code == 404 {
+		// TODO: Only conver to StatusError if the error is in fact a status error
+		statusError, ok := err.(*errors.StatusError)
+		if ok == true && statusError.Status().Code == 404 {
 			return false, nil
 		}
 		return false, err

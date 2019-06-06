@@ -75,11 +75,11 @@ func (p Plugin) Exec() error {
 	deployment := CreateDeploymentObj(depYaml)
 	deploymentExists, err := DeploymentExists(clientset, p.KubeConfig.Namespace, deployment.Name)
 	if deploymentExists {
-		log.Printf("📦 Found existing deployment. Updating:\n%s\n", depYaml)
+		log.Printf("📦 Found existing deployment. Updating.\n%s\n", depYaml)
 		err = UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 		return err
 	}
-	log.Printf("📦 Creating new deployment\n%s\n", depYaml)
+	log.Printf("📦 Creating new deployment.\n%s\n", depYaml)
 	err = CreateDeployment(clientset, p.KubeConfig.Namespace, deployment)
 	return err
 }

@@ -18,6 +18,7 @@ func main() {
 		},
 	}
 	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
+	fmt.Println("kubano v0.0.1 https://github.com/danielgormly/drone-plugin-kube")
 	err := plugin.Exec()
 	if err != nil {
 		log.Fatalf("⛔️ Fatal error: \n%s", err)

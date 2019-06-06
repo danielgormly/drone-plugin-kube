@@ -2,7 +2,7 @@
 
 [![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")
 
-A simple Drone plugin for updating Kubernetes deployments. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. Note this does not create a Kubernetes deployment, only updates existing deployments.
+A simple Drone plugin for updating Kubernetes deployments. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
 
 ## Usage
 

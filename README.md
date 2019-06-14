@@ -28,7 +28,7 @@ Deployment config files are first interpreted by **aymerick/raymond** ([handleba
 
 ## Config maps from files
 
-In this case
+In this case, you can create a template just like deployment.yaml but you can provide a file path (relative to the repo's root) in the plugin setting `configmap_file`.
 
 #### Adding a service account to Kubernetes that can manage deployments
 See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](example/ServiceAccount.yaml), [example/RoleBinding.yaml](example/RoleBinding.yaml).

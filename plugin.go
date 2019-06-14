@@ -25,8 +25,9 @@ type (
 	}
 	// Plugin -- Contains config for plugin
 	Plugin struct {
-		Template   string
-		KubeConfig KubeConfig
+		Template      string
+		KubeConfig    KubeConfig
+		ConfigMapFile string // Optional
 	}
 )
 
@@ -76,11 +77,19 @@ func (p Plugin) Exec() error {
 	}
 	// Decode
 	kubernetesObject, _, err := scheme.Codecs.UniversalDeserializer().Decode([]byte(templateYaml), nil, nil)
+	if err != nil {
+		log.Print("⛔️ Error decoding template into valid Kubernetes object:")
+		return err
+	}
 
 	switch o := kubernetesObject.(type) {
 	case *appv1.Deployment:
-		CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
+		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
 	case *corev1.ConfigMap:
-		CreateOrUpdateConfigMap(clientset, p.KubeConfig.Namespace, o)
+		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
+	default:
+		err = errors.New("⛔️ This plugin doesn't support that kind of Kubernetes object")
+		return err
 	}
+	return err
 }

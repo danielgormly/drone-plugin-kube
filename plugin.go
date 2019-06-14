@@ -9,6 +9,9 @@ import (
 	"strings"
 
 	"github.com/aymerick/raymond"
+	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes/scheme"
 )
 
 type (
@@ -62,8 +65,7 @@ func (p Plugin) Exec() error {
 		return err
 	}
 	// Parse template
-	depYaml, err := raymond.Render(string(raw), ctx)
-
+	templateYaml, err := raymond.Render(string(raw), ctx)
 	if err != nil {
 		return err
 	}
@@ -72,14 +74,13 @@ func (p Plugin) Exec() error {
 	if err != nil {
 		return err
 	}
-	deployment := CreateDeploymentObj(depYaml)
-	deploymentExists, err := DeploymentExists(clientset, p.KubeConfig.Namespace, deployment.Name)
-	if deploymentExists {
-		log.Printf("📦 Found existing deployment. Updating.\n%s\n", depYaml)
-		err = UpdateDeployment(clientset, p.KubeConfig.Namespace, deployment)
-		return err
+	// Decode
+	kubernetesObject, _, err := scheme.Codecs.UniversalDeserializer().Decode([]byte(templateYaml), nil, nil)
+
+	switch o := kubernetesObject.(type) {
+	case *appv1.Deployment:
+		CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
+	case *corev1.ConfigMap:
+		CreateOrUpdateConfigMap(clientset, p.KubeConfig.Namespace, o)
 	}
-	log.Printf("📦 Creating new deployment.\n%s\n", depYaml)
-	err = CreateDeployment(clientset, p.KubeConfig.Namespace, deployment)
-	return err
 }

@@ -5,25 +5,17 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/scheme"
 )
 
-// CreateDeploymentObj -- Construct KubeClient ready json from YAML definition file
-func CreateDeploymentObj(yaml string) *appv1.Deployment {
-	deployment := appv1.Deployment{}
-	scheme.Codecs.UniversalDeserializer().Decode([]byte(yaml), nil, &deployment)
-	return &deployment
-}
-
-// UpdateDeployment -- Updates given deployment in Kubernetes
-func UpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appv1.Deployment) error {
-	_, err := clientset.AppsV1().Deployments(namespace).Update(deployment)
-	return err
-}
-
-// CreateDeployment -- Updates given deployment in Kubernetes
-func CreateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appv1.Deployment) error {
-	_, err := clientset.AppsV1().Deployments(namespace).Create(deployment)
+// CreateOrUpdateDeployment -- Checks if deployment already exists, updates if it does, creates if it doesn't
+func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appv1.Deployment) error {
+	deploymentExists, err := DeploymentExists(clientset, namespace, deployment.Name)
+	if deploymentExists {
+		// log.Printf("📦 Found existing deployment. Updating.\n%s\n", depYaml)
+		_, err = clientset.AppsV1().Deployments(namespace).Update(deployment)
+		return err
+	}
+	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)
 	return err
 }
 

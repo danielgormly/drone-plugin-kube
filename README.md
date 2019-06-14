@@ -2,13 +2,13 @@
 
 [![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")
 
-A simple Drone plugin for updating Kubernetes deployments. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
+A simple Drone plugin for updating Kubernetes deployments from templates & configMaps from files. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
 
 ## Usage
 
 Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/) to your drone pipeline definition. Currently this plugin only updates deployments, it does not create them. I can add this behaviour or I will accept pull requests to introduce it.
 
-#### drone.yaml partial example
+#### drone.yaml deployment example
 ```yml
 - name: Deploy app
   image: danielgormly/drone-plugin-kube
@@ -25,6 +25,10 @@ Add the following [build step](https://docs.drone.io/user-guide/pipeline/steps/)
 ## Deployment templates
 
 Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions and anything you put in settings will be made available in your deployment template e.g. `{{namespace}}`. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
+
+## Config maps from files
+
+In this case
 
 #### Adding a service account to Kubernetes that can manage deployments
 See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](example/ServiceAccount.yaml), [example/RoleBinding.yaml](example/RoleBinding.yaml).

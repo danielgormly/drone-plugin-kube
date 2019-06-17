@@ -83,13 +83,13 @@ func (p Plugin) Exec() error {
 	}
 	switch o := kubernetesObject.(type) {
 	case *appv1.Deployment:
-		log.Print("Found Deployment")
+		log.Print("📦 Resource type: Deployment")
 		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
 	case *corev1.ConfigMap:
-		log.Print("Found ConfigMap")
+		log.Print("📦 Resource type: ConfigMap")
 		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
 	default:
-		err = errors.New("⛔️ This plugin doesn't support that kind of Kubernetes object")
+		err = errors.New("⛔️ This plugin doesn't support that resource type")
 		return err
 	}
 	return err

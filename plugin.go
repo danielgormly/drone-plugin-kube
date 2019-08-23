@@ -85,6 +85,14 @@ func (p Plugin) Exec() error {
 	case *appv1.Deployment:
 		log.Print("📦 Resource type: Deployment")
 		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
+		if err != nil {
+			return err
+		}
+		// Watch for successful update
+		log.Print("📦 Waiting for succesful update")
+		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
+		log.Printf("%s", state)
+		return watchErr
 	case *corev1.ConfigMap:
 		log.Print("📦 Resource type: ConfigMap")
 		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)

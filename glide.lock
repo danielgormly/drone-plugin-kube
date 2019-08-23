@@ -1,5 +1,5 @@
 hash: 0a6476e347f6e80ed358c4dadb03f9a46c1acac36f211864199ff09a4325ec94
-updated: 2019-05-29T12:43:58.994174+10:00
+updated: 2019-08-23T12:18:51.611093+10:00
 imports:
 - name: github.com/aymerick/raymond
   version: b565731e1464263de0bda75f2e45d97b54b60110
@@ -25,7 +25,7 @@ imports:
   - ptypes/duration
   - ptypes/timestamp
 - name: github.com/google/gofuzz
-  version: 44d81051d367757e1c7c6a5a86423ece9afcf63c
+  version: 24818f796faf91cd76ec7bddd72458fbced7a6c1
 - name: github.com/googleapis/gnostic
   version: 0c5108395e2debce0d731cf0287ddf7242066aba
   subpackages:
@@ -47,13 +47,13 @@ imports:
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
-  version: 0ed95abb35c445290478a5348a7b38bb154135fd
+  version: 65e2d4e15006aab9813ff8769e768bbf4bb667a0
   subpackages:
   - context
+  - http/httpguts
   - http2
   - http2/hpack
   - idna
-  - lex/httplex
 - name: golang.org/x/oauth2
   version: a6bd8cefa1811bd24b86f8902872e4e8225f74c4
   subpackages:
@@ -78,7 +78,7 @@ imports:
   subpackages:
   - rate
 - name: google.golang.org/appengine
-  version: 311d3c5cf9373249645db030e53c37c209a8b378
+  version: fb139bde60fa77cede04f226b4d5a3cf68dcce27
   subpackages:
   - internal
   - internal/base
@@ -131,7 +131,7 @@ imports:
   - storage/v1alpha1
   - storage/v1beta1
 - name: k8s.io/apimachinery
-  version: 2b1284ed4c93a43499e781493253e2ac5959c4fd
+  version: d7deff9243b165ee192f5551710ea4285dcfd615
   subpackages:
   - pkg/api/apitesting
   - pkg/api/apitesting/fuzzer
@@ -237,7 +237,7 @@ imports:
   - util/homedir
   - util/keyutil
 - name: k8s.io/klog
-  version: 8139d8cb77af419532b33dfa7dd09fbc5f1d344f
+  version: 8e90cee79f823779174776412c13478955131846
 - name: k8s.io/utils
   version: c2654d5206da6b7b6ace12841e8f359bb89b443c
   subpackages:

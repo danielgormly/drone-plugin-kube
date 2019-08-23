@@ -41,3 +41,4 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 - [Installing kubernetes/client-go](https://github.com/kubernetes/client-go/blob/master/INSTALL.md)
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/examples/golang/)
 - Testing with minikube (OSX: `brew cask install minikube`)
+- [Client-go API Docs @ godoc.org](https://godoc.org/k8s.io/client-go/kubernetes)

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 10.0.0.24:443/test:example.{{commit}}
+        image: nginx:alpine
         ports:
         - containerPort: 80
       imagePullSecrets:

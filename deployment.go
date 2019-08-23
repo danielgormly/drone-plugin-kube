@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"strings"
+
 	appv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,10 +15,11 @@ import (
 func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appv1.Deployment) error {
 	deploymentExists, err := deploymentExists(clientset, namespace, deployment.Name)
 	if deploymentExists {
-		// log.Printf("📦 Found existing deployment. Updating.\n%s\n", depYaml)
+		log.Printf("📦 Found existing deployment. Updating.")
 		_, err = clientset.AppsV1().Deployments(namespace).Update(deployment)
 		return err
 	}
+	log.Printf("📦 Creating new deployment.")
 	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)
 	return err
 }
@@ -31,4 +36,26 @@ func deploymentExists(clientset *kubernetes.Clientset, namespace string, name st
 		return false, err
 	}
 	return true, nil
+}
+
+// waitUntilDeploymentSettled -- Waits until ready, failure or timeout
+func waitUntilDeploymentSettled(clientset *kubernetes.Clientset, namespace string, name string, timeout int64) (state string, err error) {
+	fieldSelector := strings.Join([]string{"metadata.name", name}, "=")
+	watchOptions := meta.ListOptions{
+		FieldSelector: fieldSelector,
+		Watch:         true,
+	}
+	watcher, error := clientset.AppsV1().Deployments(namespace).Watch(watchOptions)
+	liveDeployment, error := clientset.AppsV1().Deployments(namespace).Get(name, meta.GetOptions{})
+	log.Printf("📦 Unavailable replicas: %d", liveDeployment.Status.UnavailableReplicas)
+	if liveDeployment.Status.UnavailableReplicas == 0 {
+		return "ready", error
+	}
+	i := 0
+	for {
+		event := <-watcher.ResultChan()
+		fmt.Printf("%s\n\n", event.Object)
+		i++
+	}
+	return "failed", error
 }

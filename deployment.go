@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -15,11 +14,11 @@ import (
 func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appv1.Deployment) error {
 	deploymentExists, err := deploymentExists(clientset, namespace, deployment.Name)
 	if deploymentExists {
-		log.Printf("📦 Found existing deployment. Updating.")
+		log.Printf("📦 Found existing deployment '%s'. Updating.", deployment.Name)
 		_, err = clientset.AppsV1().Deployments(namespace).Update(deployment)
 		return err
 	}
-	log.Printf("📦 Creating new deployment.")
+	log.Printf("📦 Creating new deployment '%s'. Updating.", deployment.Name)
 	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)
 	return err
 }
@@ -48,13 +47,18 @@ func waitUntilDeploymentSettled(clientset *kubernetes.Clientset, namespace strin
 	watcher, error := clientset.AppsV1().Deployments(namespace).Watch(watchOptions)
 	liveDeployment, error := clientset.AppsV1().Deployments(namespace).Get(name, meta.GetOptions{})
 	log.Printf("📦 Unavailable replicas: %d", liveDeployment.Status.UnavailableReplicas)
+	log.Printf("📦 %s", liveDeployment)
 	if liveDeployment.Status.UnavailableReplicas == 0 {
-		return "ready", error
+		return "📦 Updated", error
 	}
 	i := 0
 	for {
 		event := <-watcher.ResultChan()
-		fmt.Printf("%s\n\n", event.Object)
+		deployment := event.Object.(*appv1.Deployment)
+		if liveDeployment.Status.UnavailableReplicas == 0 {
+			return "📦 Updated", error
+		}
+		log.Printf("📦 Unavailable replicas: %d", deployment.Status.UnavailableReplicas)
 		i++
 	}
 	return "failed", error

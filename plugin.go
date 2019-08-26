@@ -89,7 +89,7 @@ func (p Plugin) Exec() error {
 			return err
 		}
 		// Watch for successful update
-		log.Print("📦 Waiting for succesful update")
+		log.Print("📦 Watching deployment until no unavailable replicas.")
 		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
 		log.Printf("%s", state)
 		return watchErr

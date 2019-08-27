@@ -26,7 +26,7 @@ pipeline:
 
 Create or update config-map from a single file
 
-```yaml
+```diff
 pipeline:
 - name: Deploy app
   image: danielgormly/drone-plugin-kube:0.0.1

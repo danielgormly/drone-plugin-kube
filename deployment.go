@@ -47,7 +47,6 @@ func waitUntilDeploymentSettled(clientset *kubernetes.Clientset, namespace strin
 	watcher, error := clientset.AppsV1().Deployments(namespace).Watch(watchOptions)
 	liveDeployment, error := clientset.AppsV1().Deployments(namespace).Get(name, meta.GetOptions{})
 	log.Printf("📦 Unavailable replicas: %d", liveDeployment.Status.UnavailableReplicas)
-	log.Printf("📦 %s", liveDeployment)
 	if liveDeployment.Status.UnavailableReplicas == 0 {
 		return "📦 Updated", error
 	}
@@ -55,11 +54,10 @@ func waitUntilDeploymentSettled(clientset *kubernetes.Clientset, namespace strin
 	for {
 		event := <-watcher.ResultChan()
 		deployment := event.Object.(*appv1.Deployment)
-		if liveDeployment.Status.UnavailableReplicas == 0 {
+		if deployment.Status.UnavailableReplicas == 0 {
 			return "📦 Updated", error
 		}
 		log.Printf("📦 Unavailable replicas: %d", deployment.Status.UnavailableReplicas)
 		i++
 	}
-	return "failed", error
 }

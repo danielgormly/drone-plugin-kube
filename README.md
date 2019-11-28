@@ -22,6 +22,6 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 [`brew install glide`](https://github.com/Masterminds/glide).
 - Update dependencies with brew `glide update --strip-vendor`
 - [kubernetes/client-go installation notes](https://github.com/kubernetes/client-go/blob/master/INSTALL.md)
-- [Creating a Drone plugin in Go](https://docs.drone.io/plugins/examples/golang/)
+- [Creating a Drone plugin in Go](https://docs.drone.io/plugins/tutorials/golang/)
 - [Client-go API Docs @ godoc.org](https://godoc.org/k8s.io/client-go/kubernetes)
 - Testing with minikube (OSX: `brew cask install minikube`)

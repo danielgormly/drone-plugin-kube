@@ -1,7 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-rm -rf build/kubano
+set -eou pipefail
+
+rm -rf build/
+
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o build/kubano
 
-docker build -t danielgormly/drone-plugin-kube:0.0.2 build
-docker push danielgormly/drone-plugin-kube:0.0.2
+docker build -t polygonio/sandbox:drone-plugin-kube build
+docker push polygonio/sandbox:drone-plugin-kube

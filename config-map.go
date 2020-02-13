@@ -24,6 +24,9 @@ func ApplyConfigMapFromFile(clientset *kubernetes.Clientset, namespace string, c
 	configmap.Data = configMapData
 	// Check if deployment exists
 	deploymentExists, err := configMapExists(clientset, namespace, configmap.Name)
+	if err != nil {
+		return err
+	}
 	if deploymentExists {
 		log.Printf("📦 Found existing deployment. Updating %s.", configmap.Name)
 		_, err = clientset.CoreV1().ConfigMaps(namespace).Update(configmap)

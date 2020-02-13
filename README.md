@@ -17,6 +17,10 @@ In this case, you can create a template just like deployment.yaml but you can pr
 #### Adding a service account to Kubernetes that can manage deployments
 See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](example/ServiceAccount.yaml), [example/RoleBinding.yaml](example/RoleBinding.yaml).
 
+## Notes:
+
+- The watching process after a deployment goes through is not super reliable i.e. it doesn't properly wait for new deployments to become live. Not entirely sure how this should behave but I think behind a flag would make sense. PRs welcome.
+
 ## Development notes
 - Kubernetes client not yet supported by dep, so we are using
 [`brew install glide`](https://github.com/Masterminds/glide).

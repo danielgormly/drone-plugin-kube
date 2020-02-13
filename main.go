@@ -19,7 +19,7 @@ func main() {
 		},
 	}
 	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
-	fmt.Println("danielgormly/drone-plugin-kube@0.0.2 https://github.com/danielgormly/drone-plugin-kube")
+	fmt.Println("originally from danielgormly/drone-plugin-kube@0.0.2 https://github.com/danielgormly/drone-plugin-kube")
 	err := plugin.Exec()
 	if err != nil {
 		log.Fatalf("⛔️ Fatal error: \n%s", err)

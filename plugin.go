@@ -42,9 +42,6 @@ func (p Plugin) Exec() error {
 	if p.KubeConfig.Ca == "" {
 		return errors.New("PLUGIN_CA is not defined")
 	}
-	if p.KubeConfig.Namespace == "" {
-		p.KubeConfig.Namespace = "default"
-	}
 	if p.Template == "" {
 		return errors.New("PLUGIN_TEMPLATE, or template must be defined")
 	}
@@ -58,47 +55,74 @@ func (p Plugin) Exec() error {
 			key := strings.ToLower(matches[1])
 			ctx[key] = matches[2]
 		}
+
+		re = regexp.MustCompile(`^DRONE_(.*)=(.*)`)
+		if re.MatchString(value) {
+			matches := re.FindStringSubmatch(value)
+			key := strings.ToLower(matches[1])
+			ctx[key] = matches[2]
+		}
 	}
+
 	// Grab template from filesystem
 	raw, err := ioutil.ReadFile(p.Template)
 	if err != nil {
 		log.Print("⛔️ Error reading template file:")
 		return err
 	}
+
 	// Parse template
 	templateYaml, err := raymond.Render(string(raw), ctx)
 	if err != nil {
 		return err
 	}
+
 	// Connect to Kubernetes
 	clientset, err := p.CreateKubeClient()
 	if err != nil {
 		return err
 	}
+
 	// Decode
 	kubernetesObject, _, err := scheme.Codecs.UniversalDeserializer().Decode([]byte(templateYaml), nil, nil)
 	if err != nil {
 		log.Print("⛔️ Error decoding template into valid Kubernetes object:")
 		return err
 	}
+
 	switch o := kubernetesObject.(type) {
 	case *appv1.Deployment:
 		log.Print("📦 Resource type: Deployment")
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
 		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
 		if err != nil {
 			return err
 		}
+
 		// Watch for successful update
 		log.Print("📦 Watching deployment until no unavailable replicas.")
 		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
 		log.Printf("%s", state)
 		return watchErr
 	case *corev1.ConfigMap:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
 		log.Print("📦 Resource type: ConfigMap")
 		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
+	case *corev1.Service:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
+		log.Print("Resource type: Service")
+		err = ApplyService(clientset, p.KubeConfig.Namespace, o)
 	default:
-		err = errors.New("⛔️ This plugin doesn't support that resource type")
-		return err
+		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}
 	return err
 }

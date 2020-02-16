@@ -1,3 +1,3 @@
 FROM alpine
-ADD kubano /bin/
+ADD built/kubano /bin/
 ENTRYPOINT /bin/kubano

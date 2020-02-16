@@ -22,7 +22,7 @@ func (p Plugin) CreateKubeClient() (*kubernetes.Clientset, error) {
 	} else {
 		ca, err := base64.StdEncoding.DecodeString(p.KubeConfig.Ca)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("possible corrupted CA, or not base64 encoded: %s\n", err)
 		}
 		clusterConfig.CertificateAuthorityData = ca
 	}
@@ -39,10 +39,7 @@ func (p Plugin) CreateKubeClient() (*kubernetes.Clientset, error) {
 	clientBuilder := clientcmd.NewNonInteractiveClientConfig(*config, "default", &clientcmd.ConfigOverrides{}, nil)
 	actualCfg, err := clientBuilder.ClientConfig()
 	if err != nil {
-		log.Fatal(err)
-	}
-	if err != nil {
-		fmt.Printf("Unexpected error: %v", err)
+		return nil, fmt.Errorf("client builder client config; %w", err)
 	}
 	return kubernetes.NewForConfig(actualCfg)
 }

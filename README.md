@@ -24,9 +24,7 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 - The watching process after a deployment goes through is not super reliable i.e. it doesn't properly wait for new deployments to become live. Not entirely sure how this should behave but I think behind a flag would make sense. PRs welcome.
 
 ## Development notes
-- Kubernetes client not yet supported by dep, so we are using
-[`brew install glide`](https://github.com/Masterminds/glide).
-- Update dependencies with brew `glide update --strip-vendor`
+- Kubernetes client is a little confusing with dependencies but does work with go.mod as seen [here](https://github.com/kubernetes/client-go/blob/master/INSTALL.md#add-client-go-as-a-dependency)
 - [kubernetes/client-go installation notes](https://github.com/kubernetes/client-go/blob/master/INSTALL.md)
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/tutorials/golang/)
 - [Client-go API Docs @ godoc.org](https://godoc.org/k8s.io/client-go/kubernetes)

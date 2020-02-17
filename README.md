@@ -4,6 +4,8 @@
 
 A simple Drone plugin for updating Kubernetes Deployments from templates & ConfigMaps from files. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
 
+This plugin supports deployments, configmaps, ingresses, and services.
+
 Usage: See [drone.md](./drone.md)
 
 ## Deployment templates

@@ -9,8 +9,9 @@ import (
 	"strings"
 
 	"github.com/aymerick/raymond"
-	appv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
+	appV1 "k8s.io/api/apps/v1"
+	coreV1 "k8s.io/api/core/v1"
+	v1BetaV1 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
@@ -91,7 +92,7 @@ func (p Plugin) Exec() error {
 	}
 
 	switch o := kubernetesObject.(type) {
-	case *appv1.Deployment:
+	case *appV1.Deployment:
 		log.Print("📦 Resource type: Deployment")
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
@@ -107,20 +108,27 @@ func (p Plugin) Exec() error {
 		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
 		log.Printf("%s", state)
 		return watchErr
-	case *corev1.ConfigMap:
+	case *coreV1.ConfigMap:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
 		log.Print("📦 Resource type: ConfigMap")
 		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
-	case *corev1.Service:
+	case *coreV1.Service:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
 		log.Print("Resource type: Service")
 		err = ApplyService(clientset, p.KubeConfig.Namespace, o)
+	case *v1BetaV1.Ingress:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
+		log.Print("Resource type: Ingress")
+		err = ApplyIngress(clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

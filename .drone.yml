@@ -1,0 +1,35 @@
+---
+kind: pipeline
+type: docker
+name: build, push, deploy to dev
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: build
+  image: golang:1.13.7
+  commands:
+  - GOOS=linux go build -o built/kubano
+
+- name: docker-push
+  image: plugins/docker
+  settings:
+    password:
+      from_secret: dockerhub_password
+    repo: polygonio/drone-kube
+    tag:
+    - ${DRONE_BRANCH/master/latest}
+    - ${DRONE_BRANCH}.build-${DRONE_COMMIT}
+    username:
+      from_secret: dockerhub_username
+  depends_on:
+  - build
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
+...

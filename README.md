@@ -2,7 +2,9 @@
 
 [![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")
 
-A simple Drone plugin for updating Kubernetes Deployments from templates & ConfigMaps from files. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
+A simple Drone plugin for updating Kubernetes Deployments from templates & ConfigMaps from files.
+Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) and then [drone-plugin-kube](https://github.com/danielgormly/drone-plugin-kube)
+but adds support for services and ingresses. It also has a slightly better working deployment watcher.
 
 Usage: See [drone.md](./drone.md)
 

@@ -56,13 +56,6 @@ func (p Plugin) Exec() error {
 			key := strings.ToLower(matches[1])
 			ctx[key] = matches[2]
 		}
-
-		re = regexp.MustCompile(`^DRONE_(.*)=(.*)`)
-		if re.MatchString(value) {
-			matches := re.FindStringSubmatch(value)
-			key := strings.ToLower(matches[1])
-			ctx[key] = matches[2]
-		}
 	}
 
 	// Grab template from filesystem

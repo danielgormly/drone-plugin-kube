@@ -21,7 +21,7 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 
 ## Notes:
 
-- The watching process after a deployment goes through is not super reliable i.e. it doesn't properly wait for new deployments to become live. Not entirely sure how this should behave but I think behind a flag would make sense. PRs welcome.
+- The watching process is not currently reliable i.e. it doesn't properly wait for new deployments to become live. Not entirely sure how this should behave but I think behind a flag would make sense. PRs welcome.
 
 ## Development notes
 - Kubernetes client is a little confusing with dependencies but does work with go.mod as seen [here](https://github.com/kubernetes/client-go/blob/master/INSTALL.md#add-client-go-as-a-dependency)
@@ -29,3 +29,7 @@ See [example/Role.yaml](example/Role.yaml), [example/ServiceAccount.yaml](exampl
 - [Creating a Drone plugin in Go](https://docs.drone.io/plugins/tutorials/golang/)
 - [Client-go API Docs @ godoc.org](https://godoc.org/k8s.io/client-go/kubernetes)
 - Testing with minikube (OSX: `brew cask install minikube`)
+
+## Acknowledgements
+- [@vallard](https://github.com/vallard) for the original plugin
+- [@jbonzo](https://github.com/jbonzo) for ingress, service support, improved error handling etc

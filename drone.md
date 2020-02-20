@@ -8,7 +8,7 @@ logo: kubernetes.svg
 image: danielgormly/drone-plugin-kube
 ---
 
-Updates Kubernetes deployments from templates & configMaps from files. This plugin will either create or update existing resources dependent on their presence. It will wait for deployments before it progresses. Additional
+Updates Kubernetes resources (deployments, ingresses, services, configmap - with binary data). This plugin will either create or update existing resources dependent on their presence. It will wait for deployments before it progresses.
 
 Create or update deployment
 
@@ -47,6 +47,9 @@ ca
 
 server
 : https://10.0.0.20:6443
+
+namespace
+: Namespace to deploy to
 
 kubernetes_token
 : Kubernetes service account token (Not base64 encoded)

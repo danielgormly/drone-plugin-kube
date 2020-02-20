@@ -2,13 +2,13 @@
 
 [![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")
 
-A simple Drone plugin for updating Kubernetes Deployments from templates & ConfigMaps from files. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube) but with dependency management, up-to-date client-go, docs updated to Drone 1.0.0 syntax, examples and a different structure. This plugin will create a deployment if it doesn't currently exist.
+A simple Drone plugin for updating Kubernetes resources from yaml templates. Follows from [vallard/drone-kube](https://github.com/vallard/drone-kube). The plugin will create a plugin if it doesn't already exist.
 
 This plugin supports deployments, configmaps, ingresses, and services.
 
 Usage: See [drone.md](./drone.md)
 
-## Deployment templates
+## Deployment, service, ingress templates
 
 Deployment config files are first interpreted by **aymerick/raymond** ([handlebarsjs](http://handlebarsjs.com/) equivalent). You can use all available raymond expressions and anything you put in settings will be made available in your deployment template e.g. `{{namespace}}`. See [example/deployment.template.yaml](/example/deployment.template.yaml) for a complete example.
 

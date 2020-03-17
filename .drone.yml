@@ -25,7 +25,7 @@ steps:
     repo: polygonio/drone-kube
     tag:
     - ${DRONE_BRANCH/master/latest}
-    - ${DRONE_BRANCH}.build-${DRONE_COMMIT}
+    - ${DRONE_COMMIT}
     username:
       from_secret: dockerhub_username
   depends_on:

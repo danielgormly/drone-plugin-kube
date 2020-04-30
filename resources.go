@@ -12,7 +12,8 @@ import (
 
 	appV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
-	v1BetaV1 "k8s.io/api/extensions/v1beta1"
+	extV1BetaV1 "k8s.io/api/extensions/v1beta1"
+	netV1BetaV1 "k8s.io/api/networking/v1beta1"
 	kubeErrors "k8s.io/apimachinery/pkg/api/errors"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -163,8 +164,8 @@ func configMapExists(clientset *kubernetes.Clientset, namespace string, name str
 	return true, nil
 }
 
-func ApplyIngress(clientset *kubernetes.Clientset, namespace string, ingress *v1BetaV1.Ingress) error {
-	_, exists, err := getIngress(clientset, namespace, ingress.Name)
+func ApplyExtensionsV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, ingress *extV1BetaV1.Ingress) error {
+	_, exists, err := getExtensionsV1beta1Ingress(clientset, namespace, ingress.Name)
 	if err != nil {
 		return err
 	}
@@ -178,8 +179,37 @@ func ApplyIngress(clientset *kubernetes.Clientset, namespace string, ingress *v1
 	return err
 }
 
-func getIngress(clientset *kubernetes.Clientset, namespace string, name string) (*v1BetaV1.Ingress, bool, error) {
+func getExtensionsV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, name string) (*extV1BetaV1.Ingress, bool, error) {
 	ingress, err := clientset.ExtensionsV1beta1().Ingresses(namespace).Get(name, metaV1.GetOptions{})
+	if err != nil {
+		statusError, ok := err.(*kubeErrors.StatusError)
+		if ok && statusError.Status().Code == http.StatusNotFound {
+			return nil, false, nil
+		}
+		return nil, false, err
+	}
+
+	return ingress, true, nil
+}
+
+
+func ApplyNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, ingress *netV1BetaV1.Ingress) error {
+	_, exists, err := getNetworkingV1beta1Ingress(clientset, namespace, ingress.Name)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		_, err = clientset.NetworkingV1beta1().Ingresses(namespace).Create(ingress)
+		return err
+	}
+
+	_, err = clientset.NetworkingV1beta1().Ingresses(namespace).Update(ingress)
+	return err
+}
+
+func getNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, name string) (*netV1BetaV1.Ingress, bool, error) {
+	ingress, err := clientset.NetworkingV1beta1().Ingresses(namespace).Get(name, metaV1.GetOptions{})
 	if err != nil {
 		statusError, ok := err.(*kubeErrors.StatusError)
 		if ok && statusError.Status().Code == http.StatusNotFound {

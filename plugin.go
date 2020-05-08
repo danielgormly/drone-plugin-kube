@@ -50,7 +50,6 @@ func (p Plugin) Exec() error {
 	// Make map of environment variables set by Drone
 	ctx := make(map[string]string)
 	pluginEnv := os.Environ()
-	log.Print(os.Environ())
 	for _, value := range pluginEnv {
 		re := regexp.MustCompile(`^PLUGIN_(.*)=(.*)`)
 		if re.MatchString(value) {
@@ -66,6 +65,8 @@ func (p Plugin) Exec() error {
 		log.Print("⛔️ Error reading template file:")
 		return err
 	}
+
+	log.Print(string(raw))
 
 	// Parse template
 	templateYaml, err := raymond.Render(string(raw), ctx)
@@ -135,7 +136,7 @@ func (p Plugin) Exec() error {
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
-		err = ApplySecret(clientset, p.KubeConfig.Namespace, o)
+		err = ApplySecret(clientset, p.KubeConfig.Namespace, o, data)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

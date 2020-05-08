@@ -66,6 +66,7 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	log.Print(ctx)
 	log.Print(string(raw))
 
 	// Parse template

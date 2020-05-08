@@ -229,6 +229,25 @@ func ApplySecret(clientset *kubernetes.Clientset, namespace string, secret *core
 		secret.StringData[k] = v
 	}
 
-	_, err := clientset.CoreV1().Secrets(namespace).Create(secret)
+	_, exists, err := getSecret(clientset, namespace, secret.Name)
+	if !exists {
+		_, err := clientset.CoreV1().Secrets(namespace).Create(secret)
+		return err
+	}
+
+	_, err = clientset.CoreV1().Secrets(namespace).Update(secret)
 	return err
+}
+
+func getSecret(clientset *kubernetes.Clientset, namespace string, name string) (*coreV1.Secret, bool, error) {
+	secret, err := clientset.CoreV1().Secrets(namespace).Get(name, metaV1.GetOptions{})
+	if err != nil {
+		statusError, ok := err.(*kubeErrors.StatusError)
+		if ok && statusError.Status().Code == http.StatusNotFound {
+			return nil, false, nil
+		}
+		return nil, false, err
+	}
+
+	return secret, true, nil
 }

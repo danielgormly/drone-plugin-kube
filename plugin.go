@@ -64,7 +64,8 @@ func (p Plugin) Exec() error {
 
 			if strings.HasPrefix(key, strings.ToLower(secretDataPrefix)) {
 				key = strings.TrimPrefix(key, strings.ToLower(secretDataPrefix))
-				secretData[key] = value
+				key = strings.Trim(key, "_")
+				secretData[key] = matches[2]
 			}
 		}
 	}
@@ -76,6 +77,7 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	log.Print(pluginEnv)
 	log.Print(ctx)
 	log.Print(secretData)
 	log.Print(string(raw))

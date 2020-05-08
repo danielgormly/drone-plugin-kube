@@ -75,6 +75,8 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	log.Print(templateYaml)
+
 	// Connect to Kubernetes
 	clientset, err := p.CreateKubeClient()
 	if err != nil {

@@ -33,6 +33,10 @@ type (
 	}
 )
 
+const (
+	secretDataPrefix = "DATA_SECRET"
+)
+
 // Exec -- Runs plugin
 func (p Plugin) Exec() error {
 	if p.KubeConfig.Server == "" {
@@ -49,6 +53,7 @@ func (p Plugin) Exec() error {
 	}
 	// Make map of environment variables set by Drone
 	ctx := make(map[string]string)
+	secretData := make(map[string]string)
 	pluginEnv := os.Environ()
 	for _, value := range pluginEnv {
 		re := regexp.MustCompile(`^PLUGIN_(.*)=(.*)`)
@@ -56,6 +61,11 @@ func (p Plugin) Exec() error {
 			matches := re.FindStringSubmatch(value)
 			key := strings.ToLower(matches[1])
 			ctx[key] = matches[2]
+
+			if strings.HasPrefix(key, strings.ToLower(secretDataPrefix)) {
+				key = strings.TrimPrefix(key, strings.ToLower(secretDataPrefix))
+				secretData[key] = value
+			}
 		}
 	}
 
@@ -67,6 +77,7 @@ func (p Plugin) Exec() error {
 	}
 
 	log.Print(ctx)
+	log.Print(secretData)
 	log.Print(string(raw))
 
 	// Parse template

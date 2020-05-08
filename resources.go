@@ -220,3 +220,8 @@ func getNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace stri
 
 	return ingress, true, nil
 }
+
+func ApplySecret(clientset *kubernetes.Clientset, namespace string, secret *coreV1.Secret) error {
+	_, err := clientset.CoreV1().Secrets(namespace).Create(secret)
+	return err
+}

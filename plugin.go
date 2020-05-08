@@ -130,6 +130,11 @@ func (p Plugin) Exec() error {
 
 		log.Print("Resource type: Ingress")
 		err = ApplyNetworkingV1beta1Ingress(clientset, p.KubeConfig.Namespace, o)
+	case *coreV1.Secret:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+		err = ApplySecret(clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

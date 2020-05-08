@@ -77,18 +77,11 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
-	log.Print(pluginEnv)
-	log.Print(ctx)
-	log.Print(secretData)
-	log.Print(string(raw))
-
 	// Parse template
 	templateYaml, err := raymond.Render(string(raw), ctx)
 	if err != nil {
 		return err
 	}
-
-	log.Print(templateYaml)
 
 	// Connect to Kubernetes
 	clientset, err := p.CreateKubeClient()
@@ -152,7 +145,7 @@ func (p Plugin) Exec() error {
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
-		err = ApplySecret(clientset, p.KubeConfig.Namespace, o)
+		err = ApplySecret(clientset, p.KubeConfig.Namespace, o, secretData)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

@@ -136,7 +136,7 @@ func (p Plugin) Exec() error {
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
-		err = ApplySecret(clientset, p.KubeConfig.Namespace, o, data)
+		err = ApplySecret(clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

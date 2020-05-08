@@ -50,6 +50,7 @@ func (p Plugin) Exec() error {
 	// Make map of environment variables set by Drone
 	ctx := make(map[string]string)
 	pluginEnv := os.Environ()
+	log.Print(os.Environ())
 	for _, value := range pluginEnv {
 		re := regexp.MustCompile(`^PLUGIN_(.*)=(.*)`)
 		if re.MatchString(value) {

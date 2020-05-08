@@ -223,8 +223,13 @@ func getNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace stri
 
 func ApplySecret(clientset *kubernetes.Clientset, namespace string, secret *coreV1.Secret, data map[string]string) error {
 	for k, v := range data {
-		secret.Data[k] = []byte(v)
+		if secret.StringData == nil {
+			log.Print("string data was nil")
+			secret.StringData = make(map[string]string)
+		}
+		secret.StringData[k] = v
 	}
+
 	_, err := clientset.CoreV1().Secrets(namespace).Create(secret)
 	return err
 }

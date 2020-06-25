@@ -110,7 +110,7 @@ func (p Plugin) Exec() error {
 
 		// Watch for successful update
 		log.Print("📦 Watching deployment until no unavailable replicas.")
-		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
+		state, watchErr := waitUntilDeploymentSettles(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
 		log.Printf("%s", state)
 		return watchErr
 	case *coreV1.ConfigMap:

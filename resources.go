@@ -54,8 +54,8 @@ const (
 	stateFailed  = "⛔️ Failed"
 )
 
-// waitUntilDeploymentSettled -- Waits until ready, failure or timeout
-func waitUntilDeploymentSettled(clientset *kubernetes.Clientset, namespace string, name string, timeoutInSeconds int64) (string, error) {
+// waitUntilDeploymentSettles -- Waits until ready, failure or timeout
+func waitUntilDeploymentSettles(clientset *kubernetes.Clientset, namespace string, name string, timeoutInSeconds int64) (string, error) {
 	fieldSelector := strings.Join([]string{"metadata.name", name}, "=")
 	watchOptions := metaV1.ListOptions{
 		FieldSelector: fieldSelector,

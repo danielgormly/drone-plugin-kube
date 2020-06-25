@@ -24,6 +24,7 @@ type (
 		Token                 string
 		Namespace             string
 		InsecureSkipTLSVerify bool
+		AdditionalAnnotations map[string]string
 	}
 	// Plugin -- Contains config for plugin
 	Plugin struct {

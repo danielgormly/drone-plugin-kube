@@ -193,10 +193,14 @@ func getExtensionsV1beta1Ingress(clientset *kubernetes.Clientset, namespace stri
 }
 
 
-func ApplyNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, ingress *netV1BetaV1.Ingress) error {
+func ApplyNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, ingress *netV1BetaV1.Ingress, additionalAnnotations map[string]string) error {
 	_, exists, err := getNetworkingV1beta1Ingress(clientset, namespace, ingress.Name)
 	if err != nil {
 		return err
+	}
+
+	for k, v := range additionalAnnotations {
+		ingress.Annotations[k] = v
 	}
 
 	if !exists {

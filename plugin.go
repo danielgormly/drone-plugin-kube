@@ -141,7 +141,7 @@ func (p Plugin) Exec() error {
 		}
 
 		log.Print("Resource type: Ingress")
-		err = ApplyNetworkingV1beta1Ingress(clientset, p.KubeConfig.Namespace, o)
+		err = ApplyNetworkingV1beta1Ingress(clientset, p.KubeConfig.Namespace, o, p.KubeConfig.AdditionalAnnotations)
 	case *coreV1.Secret:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace

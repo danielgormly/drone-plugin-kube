@@ -199,11 +199,9 @@ func ApplyNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace st
 		return err
 	}
 
-	log.Printf("annotations: %v\n", additionalAnnotations)
 	for k, v := range additionalAnnotations {
 		ingress.Annotations[k] = v
 	}
-	log.Printf("annotations: %v\n", ingress.Annotations)
 
 	if !exists {
 		_, err = clientset.NetworkingV1beta1().Ingresses(namespace).Create(ingress)

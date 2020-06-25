@@ -20,7 +20,7 @@ func main() {
 		},
 	}
 
-	fmt.Printf("PLUGIN_ADDITIONAL_ANNOTATIONS")
+	fmt.Printf(os.Getenv("PLUGIN_ADDITIONAL_ANNOTATIONS"))
 	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
 	fmt.Println("originally from danielgormly/drone-plugin-kube@0.0.2 https://github.com/danielgormly/drone-plugin-kube")
 	err := plugin.Exec()

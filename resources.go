@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -122,17 +123,56 @@ func getService(clientset *kubernetes.Clientset, namespace string, name string) 
 	return service, true, nil
 }
 
-// ApplyConfigMapFromFile -- Updates given deployment in Kubernetes
-func ApplyConfigMapFromFile(clientset *kubernetes.Clientset, namespace string, configMap *coreV1.ConfigMap, path string) error {
-	log.Printf("📦 Reading contents of %s", path)
-	_, filename := filepath.Split(path)
-	fileContents, err := ioutil.ReadFile(path)
+// ApplyConfigMap -- Updates given deployment in Kubernetes
+func ApplyConfigMap(clientset *kubernetes.Clientset, namespace string, configMap *coreV1.ConfigMap, configMapPath string) error {
+	log.Printf("📦 Reading contents of %s", configMapPath)
+	info, err := os.Stat(configMapPath)
 	if err != nil {
 		return err
 	}
 
 	configMapData := make(map[string]string)
-	configMapData[filename] = string(fileContents)
+	mode := info.Mode()
+
+	if mode.IsDir() {
+		err = filepath.Walk(configMapPath, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			if info.IsDir() { // Don't process directories, let `Walk` walk its files
+				return nil
+			}
+
+			fileContents, err := ioutil.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			relativePath, err := filepath.Rel(configMapPath, path)
+			if err != nil {
+			    return err
+			}
+
+			// Replace slashes with dashes because kube doesn't like em
+			configMapData[strings.ReplaceAll(relativePath, "/", "-")] = string(fileContents)
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+	} else if mode.IsRegular() {
+		_, filename := filepath.Split(configMapPath)
+
+		fileContents, err := ioutil.ReadFile(configMapPath)
+		if err != nil {
+			return err
+		}
+
+		configMapData[filename] = string(fileContents)
+	}
+
 	configMap.Data = configMapData
 
 	// Check if deployment exists
@@ -191,7 +231,6 @@ func getExtensionsV1beta1Ingress(clientset *kubernetes.Clientset, namespace stri
 
 	return ingress, true, nil
 }
-
 
 func ApplyNetworkingV1beta1Ingress(clientset *kubernetes.Clientset, namespace string, ingress *netV1BetaV1.Ingress, additionalAnnotations map[string]string) error {
 	_, exists, err := getNetworkingV1beta1Ingress(clientset, namespace, ingress.Name)

@@ -120,7 +120,7 @@ func (p Plugin) Exec() error {
 		}
 
 		log.Print("📦 Resource type: ConfigMap")
-		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
+		err = ApplyConfigMap(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
 	case *coreV1.Service:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace

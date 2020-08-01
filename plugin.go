@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/aymerick/raymond"
 	appV1 "k8s.io/api/apps/v1"
+	autoscalingV1 "k8s.io/api/autoscaling/v1"
 	coreV1 "k8s.io/api/core/v1"
 	extV1BetaV1 "k8s.io/api/extensions/v1beta1"
 	netV1BetaV1 "k8s.io/api/networking/v1beta1"
@@ -29,6 +31,7 @@ type (
 	// Plugin -- Contains config for plugin
 	Plugin struct {
 		Template      string
+		HpaTemplate   string
 		KubeConfig    KubeConfig
 		ConfigMapFile string // Optional
 	}
@@ -104,7 +107,15 @@ func (p Plugin) Exec() error {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
-		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
+		var hpa *autoscalingV1.HorizontalPodAutoscaler
+		if p.HpaTemplate != "" {
+			hpa, err = renderHPAConfig(ctx, p.HpaTemplate)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o, hpa)
 		if err != nil {
 			return err
 		}
@@ -147,8 +158,31 @@ func (p Plugin) Exec() error {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 		err = ApplySecret(clientset, p.KubeConfig.Namespace, o, secretData)
+	case *autoscalingV1.HorizontalPodAutoscaler:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
+		err = ApplyHorizontalAutoscaler(clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}
 	return err
+}
+
+func renderHPAConfig(ctx interface{}, hpaTemplateFilename string) (*autoscalingV1.HorizontalPodAutoscaler, error) {
+	raw, err := ioutil.ReadFile(hpaTemplateFilename)
+	if err != nil {
+		return nil, fmt.Errorf("read hpa template file: %w", err)
+	}
+
+	// Parse template
+	templateYaml, err := raymond.Render(string(raw), ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	autoscaler := &autoscalingV1.HorizontalPodAutoscaler{}
+	_, _, err = scheme.Codecs.UniversalDeserializer().Decode([]byte(templateYaml), nil, autoscaler)
+	return autoscaler, err
 }

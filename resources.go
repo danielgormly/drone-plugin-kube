@@ -12,6 +12,7 @@ import (
 	"time"
 
 	appV1 "k8s.io/api/apps/v1"
+	autoscalingV1 "k8s.io/api/autoscaling/v1"
 	coreV1 "k8s.io/api/core/v1"
 	extV1BetaV1 "k8s.io/api/extensions/v1beta1"
 	netV1BetaV1 "k8s.io/api/networking/v1beta1"
@@ -21,7 +22,7 @@ import (
 )
 
 // CreateOrUpdateDeployment -- Checks if deployment already exists, updates if it does, creates if it doesn't
-func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appV1.Deployment) error {
+func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appV1.Deployment, hpa *autoscalingV1.HorizontalPodAutoscaler) error {
 	deploymentExists, err := deploymentExists(clientset, namespace, deployment.Name)
 	if err != nil {
 		return err
@@ -33,7 +34,15 @@ func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string,
 	}
 	log.Printf("📦 Creating new deployment '%s'. Updating.", deployment.Name)
 	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)
-	return err
+	if err != nil {
+		return err
+	}
+
+	if hpa != nil {
+		return ApplyHorizontalAutoscaler(clientset, namespace, hpa)
+	}
+
+	return nil
 }
 
 // deploymentExists -- Updates given deployment in Kubernetes
@@ -282,7 +291,7 @@ func ApplySecret(clientset *kubernetes.Clientset, namespace string, secret *core
 	return err
 }
 
-func getSecret(clientset *kubernetes.Clientset, namespace string, name string) (*coreV1.Secret, bool, error) {
+func getSecret(clientset *kubernetes.Clientset, namespace, name string) (*coreV1.Secret, bool, error) {
 	secret, err := clientset.CoreV1().Secrets(namespace).Get(name, metaV1.GetOptions{})
 	if err != nil {
 		statusError, ok := err.(*kubeErrors.StatusError)
@@ -293,4 +302,33 @@ func getSecret(clientset *kubernetes.Clientset, namespace string, name string) (
 	}
 
 	return secret, true, nil
+}
+
+func ApplyHorizontalAutoscaler(clientset *kubernetes.Clientset, namespace string, autoscaler *autoscalingV1.HorizontalPodAutoscaler) error {
+	_, exists, err := getAutoscaler(clientset, namespace, autoscaler.Name)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		_, err := clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Create(autoscaler)
+		return err
+	}
+
+	_, err = clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Update(autoscaler)
+	return err
+}
+
+func getAutoscaler(clientset *kubernetes.Clientset, namespace, name string)  (*autoscalingV1.HorizontalPodAutoscaler,bool,  error) {
+	as, err := clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Get(name, metaV1.GetOptions{})
+	if err != nil {
+		statusError, ok := err.(*kubeErrors.StatusError)
+		if ok && statusError.Status().Code == http.StatusNotFound {
+			return nil, false, nil
+		}
+
+		return nil, false, err
+	}
+
+	return as, true, nil
 }

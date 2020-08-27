@@ -13,6 +13,7 @@ import (
 
 	appV1 "k8s.io/api/apps/v1"
 	autoscalingV1 "k8s.io/api/autoscaling/v1"
+	"k8s.io/api/batch/v1beta1"
 	coreV1 "k8s.io/api/core/v1"
 	extV1BetaV1 "k8s.io/api/extensions/v1beta1"
 	netV1BetaV1 "k8s.io/api/networking/v1beta1"
@@ -160,7 +161,7 @@ func ApplyConfigMap(clientset *kubernetes.Clientset, namespace string, configMap
 
 			relativePath, err := filepath.Rel(configMapPath, path)
 			if err != nil {
-			    return err
+				return err
 			}
 
 			// Replace slashes with dashes because kube doesn't like em
@@ -319,7 +320,7 @@ func ApplyHorizontalAutoscaler(clientset *kubernetes.Clientset, namespace string
 	return err
 }
 
-func getAutoscaler(clientset *kubernetes.Clientset, namespace, name string)  (*autoscalingV1.HorizontalPodAutoscaler,bool,  error) {
+func getAutoscaler(clientset *kubernetes.Clientset, namespace, name string) (*autoscalingV1.HorizontalPodAutoscaler, bool, error) {
 	as, err := clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Get(name, metaV1.GetOptions{})
 	if err != nil {
 		statusError, ok := err.(*kubeErrors.StatusError)
@@ -331,4 +332,33 @@ func getAutoscaler(clientset *kubernetes.Clientset, namespace, name string)  (*a
 	}
 
 	return as, true, nil
+}
+
+func CreateOrUpdateCronJob(clientset *kubernetes.Clientset, namespace string, cronJob *v1beta1.CronJob) error {
+	exists, err := cronJobExists(clientset, namespace, cronJob.Name)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		log.Printf("📦 Found existing cron job '%s'. Updating.", cronJob.Name)
+		_, err = clientset.BatchV1beta1().CronJobs(namespace).Update(cronJob)
+	} else {
+		log.Printf("📦 creating new cron job '%s'.", cronJob.Name)
+		_, err = clientset.BatchV1beta1().CronJobs(namespace).Create(cronJob)
+	}
+
+	return err
+}
+
+func cronJobExists(clientset *kubernetes.Clientset, namespace, name string) (bool, error) {
+	_, err := clientset.BatchV1beta1().CronJobs(namespace).Get(name, metaV1.GetOptions{})
+	if err != nil {
+		statusError, ok := err.(*kubeErrors.StatusError)
+		if ok && statusError.Status().Code == http.StatusNotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }

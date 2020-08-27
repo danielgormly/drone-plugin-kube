@@ -12,6 +12,7 @@ import (
 	"github.com/aymerick/raymond"
 	appV1 "k8s.io/api/apps/v1"
 	autoscalingV1 "k8s.io/api/autoscaling/v1"
+	"k8s.io/api/batch/v1beta1"
 	coreV1 "k8s.io/api/core/v1"
 	extV1BetaV1 "k8s.io/api/extensions/v1beta1"
 	netV1BetaV1 "k8s.io/api/networking/v1beta1"
@@ -164,6 +165,12 @@ func (p Plugin) Exec() error {
 		}
 
 		err = ApplyHorizontalAutoscaler(clientset, p.KubeConfig.Namespace, o)
+	case *v1beta1.CronJob:
+		if p.KubeConfig.Namespace == "" {
+			p.KubeConfig.Namespace = o.Namespace
+		}
+
+		err = CreateOrUpdateCronJob(clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

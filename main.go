@@ -11,6 +11,7 @@ func main() {
 	plugin := Plugin{
 		Template:      os.Getenv("PLUGIN_TEMPLATE"),
 		ConfigMapFile: os.Getenv("PLUGIN_CONFIGMAP_FILE"),
+		HpaTemplate:   os.Getenv("PLUGIN_HPA_TEMPLATE"),
 		KubeConfig: KubeConfig{
 			Token:                 os.Getenv("PLUGIN_TOKEN"),
 			Server:                os.Getenv("PLUGIN_SERVER"),

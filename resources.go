@@ -31,7 +31,15 @@ func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string,
 	if deploymentExists {
 		log.Printf("📦 Found existing deployment '%s'. Updating.", deployment.Name)
 		_, err = clientset.AppsV1().Deployments(namespace).Update(deployment)
-		return err
+		if err != nil {
+			return err
+		}
+
+		if hpa != nil {
+			log.Print("applying hpa")
+			return ApplyHorizontalAutoscaler(clientset, namespace, hpa)
+		}
+		return nil
 	}
 	log.Printf("📦 Creating new deployment '%s'. Updating.", deployment.Name)
 	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)

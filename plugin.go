@@ -192,5 +192,8 @@ func renderHPAConfig(ctx interface{}, hpaTemplateFilename string) (*autoscalingV
 
 	autoscaler := &autoscalingV1.HorizontalPodAutoscaler{}
 	_, _, err = scheme.Codecs.UniversalDeserializer().Decode([]byte(templateYaml), nil, autoscaler)
+	if autoscaler == nil {
+		return nil, errors.New("decoder made autoscaler nil")
+	}
 	return autoscaler, err
 }

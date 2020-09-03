@@ -40,6 +40,7 @@ func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string,
 	}
 
 	if hpa != nil {
+		log.Print("applying hpa")
 		return ApplyHorizontalAutoscaler(clientset, namespace, hpa)
 	}
 

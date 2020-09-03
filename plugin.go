@@ -110,6 +110,7 @@ func (p Plugin) Exec() error {
 
 		var hpa *autoscalingV1.HorizontalPodAutoscaler
 		if p.HpaTemplate != "" {
+			log.Print("rendering hpa template")
 			hpa, err = renderHPAConfig(ctx, p.HpaTemplate)
 			if err != nil {
 				return err

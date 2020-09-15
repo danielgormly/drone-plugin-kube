@@ -1,3 +1,5 @@
+Forked for Polygon.io, <a href="https://polygon.io">Get your free Stock Data API Key</a>
+
 # drone-plugin-kube
 
 [![](https://images.microbadger.com/badges/version/danielgormly/drone-plugin-kube.svg)](https://microbadger.com/images/danielgormly/drone-plugin-kube "Get your own version badge on microbadger.com")

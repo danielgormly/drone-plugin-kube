@@ -20,36 +20,41 @@ import (
 	kubeErrors "k8s.io/apimachinery/pkg/api/errors"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/utils/pointer"
 )
 
 // CreateOrUpdateDeployment -- Checks if deployment already exists, updates if it does, creates if it doesn't
-func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appV1.Deployment, hpa *autoscalingV1.HorizontalPodAutoscaler) error {
+func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string, deployment *appV1.Deployment, desiredHPA *autoscalingV1.HorizontalPodAutoscaler) error {
+	if desiredHPA != nil {
+		log.Print("applying hpa")
+		actualHPA, err := ApplyHorizontalAutoscaler(clientset, namespace, desiredHPA)
+		if err != nil {
+			return err
+		}
+
+		deployment.Spec.Replicas = pointer.Int32Ptr(actualHPA.Status.DesiredReplicas)
+	}
+
 	deploymentExists, err := deploymentExists(clientset, namespace, deployment.Name)
 	if err != nil {
 		return err
 	}
+
 	if deploymentExists {
 		log.Printf("📦 Found existing deployment '%s'. Updating.", deployment.Name)
+
 		_, err = clientset.AppsV1().Deployments(namespace).Update(deployment)
 		if err != nil {
 			return err
 		}
 
-		if hpa != nil {
-			log.Print("applying hpa")
-			return ApplyHorizontalAutoscaler(clientset, namespace, hpa)
-		}
 		return nil
 	}
+
 	log.Printf("📦 Creating new deployment '%s'. Updating.", deployment.Name)
 	_, err = clientset.AppsV1().Deployments(namespace).Create(deployment)
 	if err != nil {
 		return err
-	}
-
-	if hpa != nil {
-		log.Print("applying hpa")
-		return ApplyHorizontalAutoscaler(clientset, namespace, hpa)
 	}
 
 	return nil
@@ -59,7 +64,7 @@ func CreateOrUpdateDeployment(clientset *kubernetes.Clientset, namespace string,
 func deploymentExists(clientset *kubernetes.Clientset, namespace string, name string) (bool, error) {
 	_, err := clientset.AppsV1().Deployments(namespace).Get(name, metaV1.GetOptions{})
 	if err != nil {
-		// TODO: Only conver to StatusError if the error is in fact a status error
+		// TODO: Only convert to StatusError if the error is in fact a status error
 		statusError, ok := err.(*kubeErrors.StatusError)
 		if ok && statusError.Status().Code == http.StatusNotFound {
 			return false, nil
@@ -314,19 +319,17 @@ func getSecret(clientset *kubernetes.Clientset, namespace, name string) (*coreV1
 	return secret, true, nil
 }
 
-func ApplyHorizontalAutoscaler(clientset *kubernetes.Clientset, namespace string, autoscaler *autoscalingV1.HorizontalPodAutoscaler) error {
+func ApplyHorizontalAutoscaler(clientset *kubernetes.Clientset, namespace string, autoscaler *autoscalingV1.HorizontalPodAutoscaler) (*autoscalingV1.HorizontalPodAutoscaler, error) {
 	_, exists, err := getAutoscaler(clientset, namespace, autoscaler.Name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !exists {
-		_, err := clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Create(autoscaler)
-		return err
+		return clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Create(autoscaler)
 	}
 
-	_, err = clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Update(autoscaler)
-	return err
+	return clientset.AutoscalingV1().HorizontalPodAutoscalers(namespace).Update(autoscaler)
 }
 
 func getAutoscaler(clientset *kubernetes.Clientset, namespace, name string) (*autoscalingV1.HorizontalPodAutoscaler, bool, error) {

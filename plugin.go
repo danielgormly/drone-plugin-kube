@@ -165,7 +165,7 @@ func (p Plugin) Exec() error {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
-		err = ApplyHorizontalAutoscaler(clientset, p.KubeConfig.Namespace, o)
+		_, err = ApplyHorizontalAutoscaler(clientset, p.KubeConfig.Namespace, o)
 	case *v1beta1.CronJob:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace

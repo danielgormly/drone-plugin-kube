@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"io/ioutil"
 	"log"
@@ -11,7 +12,7 @@ import (
 	"github.com/aymerick/raymond"
 	appV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
-	v1BetaV1 "k8s.io/api/extensions/v1beta1"
+	netV1 "k8s.io/api/networking/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
@@ -33,7 +34,7 @@ type (
 )
 
 // Exec -- Runs plugin
-func (p Plugin) Exec() error {
+func (p Plugin) Exec(ctx context.Context) error {
 	if p.KubeConfig.Server == "" {
 		return errors.New("PLUGIN_SERVER is not defined")
 	}
@@ -47,21 +48,21 @@ func (p Plugin) Exec() error {
 		return errors.New("PLUGIN_TEMPLATE, or template must be defined")
 	}
 	// Make map of environment variables set by Drone
-	ctx := make(map[string]string)
+	var_ctx := make(map[string]string)
 	pluginEnv := os.Environ()
 	for _, value := range pluginEnv {
 		re := regexp.MustCompile(`^PLUGIN_(.*)=(.*)`)
 		if re.MatchString(value) {
 			matches := re.FindStringSubmatch(value)
 			key := strings.ToLower(matches[1])
-			ctx[key] = matches[2]
+			var_ctx[key] = matches[2]
 		}
 
 		re = regexp.MustCompile(`^DRONE_(.*)=(.*)`)
 		if re.MatchString(value) {
 			matches := re.FindStringSubmatch(value)
 			key := strings.ToLower(matches[1])
-			ctx[key] = matches[2]
+			var_ctx[key] = matches[2]
 		}
 	}
 
@@ -73,7 +74,7 @@ func (p Plugin) Exec() error {
 	}
 
 	// Parse template
-	templateYaml, err := raymond.Render(string(raw), ctx)
+	templateYaml, err := raymond.Render(string(raw), var_ctx)
 	if err != nil {
 		return err
 	}
@@ -98,14 +99,14 @@ func (p Plugin) Exec() error {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
-		err = CreateOrUpdateDeployment(clientset, p.KubeConfig.Namespace, o)
+		err = CreateOrUpdateDeployment(ctx, clientset, p.KubeConfig.Namespace, o)
 		if err != nil {
 			return err
 		}
 
 		// Watch for successful update
 		log.Print("📦 Watching deployment until no unavailable replicas.")
-		state, watchErr := waitUntilDeploymentSettled(clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
+		state, watchErr := waitUntilDeploymentSettled(ctx, clientset, p.KubeConfig.Namespace, o.ObjectMeta.Name, 120)
 		log.Printf("%s", state)
 		return watchErr
 	case *coreV1.ConfigMap:
@@ -114,21 +115,21 @@ func (p Plugin) Exec() error {
 		}
 
 		log.Print("📦 Resource type: ConfigMap")
-		err = ApplyConfigMapFromFile(clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
+		err = ApplyConfigMapFromFile(ctx, clientset, p.KubeConfig.Namespace, o, p.ConfigMapFile)
 	case *coreV1.Service:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
 		log.Print("Resource type: Service")
-		err = ApplyService(clientset, p.KubeConfig.Namespace, o)
-	case *v1BetaV1.Ingress:
+		err = ApplyService(ctx, clientset, p.KubeConfig.Namespace, o)
+	case *netV1.Ingress:
 		if p.KubeConfig.Namespace == "" {
 			p.KubeConfig.Namespace = o.Namespace
 		}
 
 		log.Print("Resource type: Ingress")
-		err = ApplyIngress(clientset, p.KubeConfig.Namespace, o)
+		err = ApplyIngress(ctx, clientset, p.KubeConfig.Namespace, o)
 	default:
 		return errors.New("⛔️ This plugin doesn't support that resource type")
 	}

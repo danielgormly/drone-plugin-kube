@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -19,8 +20,11 @@ func main() {
 		},
 	}
 	fmt.Printf(os.Getenv("PLUGIN_SKIP_TLS"))
-	fmt.Println("danielgormly/drone-plugin-kube@0.2.0 https://github.com/danielgormly/drone-plugin-kube")
-	err := plugin.Exec()
+	fmt.Println("danielgormly/drone-plugin-kube@0.3.0 https://github.com/danielgormly/drone-plugin-kube")
+
+	ctx := context.Background()
+
+	err := plugin.Exec(ctx)
 	if err != nil {
 		log.Fatalf("⛔️ Fatal error: \n%s", err)
 	}
